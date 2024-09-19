@@ -1,0 +1,4 @@
+name: cs325-project-1
+channels:
+  - defaults
+prefix: /home/jenn/miniconda3/envs/cs325-project-1
