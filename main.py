@@ -6,17 +6,20 @@
 import requests
 
 def main():
-    try:
-        response = send_prompt('Why is the sky blue?')
-        print(response)
+    # Read the input file as a list of prompts.
+    prompts = []
+    # Open the file
+    filename = 'input.txt'
+    with open(filename) as file:
+        # Strip whitespace from end of line before saving them into list.
+        for line in file:
+            prompts.append(line.rstrip())
 
-        response = send_prompt('Why is Mars red?')
-        print(response)
-
-        response = send_prompt('What is 6 + 4?')
-        print(response)
-    except requests.exceptions.RequestException:
-        print('Failed to send prompt')
+    for prompt in prompts:
+        try:
+            print(prompt)
+        except requests.exceptions.RequestException:
+            print('Failed to send prompt')
 
 def send_prompt(prompt):
     # Url to the Ollama server hosted on localhost.
