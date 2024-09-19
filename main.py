@@ -9,17 +9,21 @@ def main():
     # Read the input file as a list of prompts.
     prompts = []
     # Open the file
-    filename = 'input.txt'
-    with open(filename) as file:
+    input_filename = 'input.txt'
+    with open(input_filename, 'r') as file:
         # Strip whitespace from end of line before saving them into list.
         for line in file:
             prompts.append(line.rstrip())
 
-    for prompt in prompts:
-        try:
-            print(prompt)
-        except requests.exceptions.RequestException:
-            print('Failed to send prompt')
+    output_filename = 'output.txt'
+    with open(output_filename, 'w') as file:
+        for prompt in prompts:
+            try:
+                response = send_prompt(prompt)
+                file.write(response)
+                file.write('\n')
+            except requests.exceptions.RequestException:
+                print('Failed to send prompt')
 
 def send_prompt(prompt):
     # Url to the Ollama server hosted on localhost.
