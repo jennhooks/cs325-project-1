@@ -1,7 +1,8 @@
 #!/usr/bin/python
 # Main.py
 # 
-# Holds the main function of the program.
+# Reads prompts from a text file called input.txt, sends the prompts to
+# Phi3-mini and saves the responses to a file called output.txt.
 
 import requests
 
@@ -14,17 +15,21 @@ def main():
         # Strip whitespace from end of line before saving them into list.
         for line in file:
             prompts.append(line.rstrip())
-
+    # Open the output file for writing.
     output_filename = 'output.txt'
     with open(output_filename, 'w') as file:
+        # Send all prompts.
         for prompt in prompts:
             try:
+                # Send prompt and store result in output file.
                 response = send_prompt(prompt)
                 file.write(response)
                 file.write('\n')
+            # Catch any errors when sending prompts.
             except requests.exceptions.RequestException:
                 print('Failed to send prompt')
 
+# Sends a prompt string to Phi3 mini and returns the response string.
 def send_prompt(prompt):
     # Url to the Ollama server hosted on localhost.
     url = 'http://localhost:11434/api/generate'
