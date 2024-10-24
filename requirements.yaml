@@ -1,8 +1,8 @@
-name: cs325-project-1
+name: cs325-project-2
 channels:
   - defaults
 dependencies:
+  - beautifulsoup4
   - python=3.12.5
   - requests
-  - beautifulsoup4
-prefix: /home/jenn/miniconda3/envs/cs325-project-1
+prefix: /home/jenn/miniconda3/envs/cs325-project-2
