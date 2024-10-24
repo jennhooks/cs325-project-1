@@ -47,7 +47,7 @@ def get_all_reviews(url):
 def get_reviews(soup):
     review_list = []
     for content in soup.find_all('p', itemprop="reviewBody"):
-        review_list.append(content.text)
+        review_list.append(content.text.replace('Read full review...', ''))
     return review_list
 
 # When given the html document of page 1 of the reviews it extracts the other
