@@ -9,9 +9,16 @@ def main():
     # Product 1
     response = requests.get(product_url_list[0])
     soup = BeautifulSoup(response.text, 'html.parser')
-    product_1_urls = get_comment_links(soup)
-    for url in product_1_urls:
-        print(url)
+    reviews = get_reviews(soup)
+    for review in reviews:
+        print(review)
+
+# Returns a list of strings where each entry in the list is one review from the page.
+def get_reviews(soup):
+    review_list = []
+    for content in soup.find_all('p', itemprop="reviewBody"):
+        review_list.append(content.text)
+    return review_list
 
 # Returns the list of product urls in the input file.
 def get_product_links():
