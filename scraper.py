@@ -5,11 +5,22 @@ from bs4 import BeautifulSoup
 import requests
 
 def main():
-    response = requests.get('https://www.ebay.com/urw/Available-2010-Titles-Enhanced-Web-Assign-Ser-Calculus-Early-Transcendentals-by-James-Stewart-2007-Hardcover-/product-reviews/53564728?_itm=226310510813')
+    product_url_list = get_product_links()
+    # Product 1
+    response = requests.get(product_url_list[0])
     soup = BeautifulSoup(response.text, 'html.parser')
-    url_list = get_comment_links(soup)
-    for url in url_list:
+    product_1_urls = get_comment_links(soup)
+    for url in product_1_urls:
         print(url)
+
+# Returns the list of product urls in the input file.
+def get_product_links():
+    url_list = []
+    input_filename = 'input.txt'
+    with open(input_filename, 'r') as file:
+        for line in file:
+            url_list.append(line.rstrip())
+    return url_list
 
 # When given the html document of page 1 of the reviews it extracts the other
 # page's urls.
