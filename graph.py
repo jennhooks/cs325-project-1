@@ -5,6 +5,7 @@
 
 import matplotlib.pyplot as plyplot
 import numpy
+from server import count_sentiments_list
 
 def grouped_bar_chart(title, labels, data_dict):
     x = numpy.arange(len(labels))
@@ -24,3 +25,19 @@ def grouped_bar_chart(title, labels, data_dict):
     ax.set_ylim(0, 50)
 
     plyplot.show()
+
+def organize_sentiment_data(sentiments_dict, versions):
+    new_dict = {
+        'Negative' : [],
+        'Positive' : [],
+        'Neutral' : [],
+        }
+    for version in versions:
+        sentiments = sentiments_dict[version]
+        sentiment_count_dict = count_sentiments_list(sentiments)
+        new_dict['Negative'].append(sentiment_count_dict['Negative'])
+        new_dict['Positive'].append(sentiment_count_dict['Positive'])
+        new_dict['Neutral'].append(sentiment_count_dict['Neutral'])
+    return new_dict
+
+

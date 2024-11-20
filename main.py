@@ -5,7 +5,7 @@
 import graph
 import serialize
 from scraper import EbayScraper
-from server import OllamaServer, count_sentiments_list
+from server import OllamaServer
 
 def main():
     products = [
@@ -20,22 +20,8 @@ def main():
     reviews_dict = serialize.dict_from_file(products, 'reviews')
     #sentiments_dict = produce_sentiments(server, 'phi3:mini', reviews_dict, products)
     sentiments_dict = serialize.dict_from_file(products, 'sentiments')
-    data_dict = organize_sentiment_data_for_graphing(sentiments_dict, products)
+    data_dict = graph.organize_sentiment_data(sentiments_dict, products)
     graph.grouped_bar_chart('Calculus Early Transcendentals (Ebay)', products, data_dict)
-
-def organize_sentiment_data_for_graphing(sentiments_dict, versions):
-    new_dict = {
-        'Negative' : [],
-        'Positive' : [],
-        'Neutral' : [],
-        }
-    for version in versions:
-        sentiments = sentiments_dict[version]
-        sentiment_count_dict = count_sentiments_list(sentiments)
-        new_dict['Negative'].append(sentiment_count_dict['Negative'])
-        new_dict['Positive'].append(sentiment_count_dict['Positive'])
-        new_dict['Neutral'].append(sentiment_count_dict['Neutral'])
-    return new_dict
 
 def scrape_reviews(input_filename, versions):
     review_dict = {}
