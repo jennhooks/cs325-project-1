@@ -1,6 +1,7 @@
 def main():
     pass
 
+# Project 1
 #def main():
 #    # Read the input file as a list of prompts.
 #    prompts = []
@@ -23,6 +24,21 @@ def main():
 #            # Catch any errors when sending prompts.
 #            except requests.exceptions.RequestException:
 #                print('Failed to send prompt')
+
+# Project 2
+#def main():
+#    # Get urls from input file.
+#    product_url_list = get_product_links()
+#    # Define names for the output files.
+#    product_versions = ['5th edition', '6th edition', '7th edition', '8th edition']
+#    # Associate the urls with the output file names.
+#    product_dict = {}
+#    for i in range(0, len(product_url_list)):
+#        product_dict[product_url_list[i]] = product_versions[i]
+#    # For every product scrape the reviews and save them to a file.
+#    for product in product_dict:
+#        all_reviews = get_all_reviews(product)
+#        save_reviews(all_reviews, product_dict[product])
 
 if __name__ == '__main__':
     main()
