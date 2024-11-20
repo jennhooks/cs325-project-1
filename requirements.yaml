@@ -3,7 +3,8 @@ channels:
   - defaults
 dependencies:
   - beautifulsoup4
-  - python=3.12.5
+  - python==3.12.2
   - requests
   - pytest
+  - matplotlib
 prefix: /home/jenn/miniconda3/envs/cs325-project-3

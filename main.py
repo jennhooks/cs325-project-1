@@ -1,6 +1,7 @@
+import re
+import graph
 from scraper import EbayScraper
 from server import OllamaServer
-import re
 
 def main():
     products = [
@@ -10,22 +11,52 @@ def main():
             '8th edition',
             ]
     #scrape_reviews('input.txt', products)
-    reviews = {}
-    for product in products:
-        reviews[product] = []
-        with open(f"{product} reviews.txt", 'r') as file:
-            for line in file:
-                reviews[product].append(line.rstrip())
-    # Ollama server running on localhost with default port.
-    server = OllamaServer('127.0.0.1', '11434')
+#    reviews = {}
+#    for product in products:
+#        reviews[product] = []
+#        with open(f"{product} reviews.txt", 'r') as file:
+#            for line in file:
+#                reviews[product].append(line.rstrip())
+#    # Ollama server running on localhost with default port.
+#    server = OllamaServer('127.0.0.1', '11434')
+#
+#    for product in products:
+#        sentiments = generate_sentiments(server, 'phi3:mini', reviews[product])
+#        sentiments_trimmed = []
+#        for sentiment in sentiments:
+#            result = determine_sentiment(sentiment)
+#            sentiments_trimmed.append(result)
+#        list_to_file(f"{product} sentiments.txt", sentiments_trimmed)
 
+    data_dict = {
+        'Negative' : [],
+        'Positive' : [],
+        'Neutral' : [],
+            }
     for product in products:
-        sentiments = generate_sentiments(server, 'phi3:mini', reviews[product])
-        sentiments_trimmed = []
-        for sentiment in sentiments:
-            result = determine_sentiment(sentiment)
-            sentiments_trimmed.append(result)
-        list_to_file(f"{product} sentiments.txt", sentiments_trimmed)
+        sentiments = list_from_file(f"{product} sentiments.txt")
+        sentiment_dict = count_sentiments(sentiments)
+        data_dict['Negative'].append(sentiment_dict['Negative'])
+        data_dict['Positive'].append(sentiment_dict['Positive'])
+        data_dict['Neutral'].append(sentiment_dict['Neutral'])
+
+    graph.grouped_bar_chart('Calculus Early Transcendentals (Ebay)', products, data_dict)
+
+def count_sentiments(sentiments):
+    sentiment_dict = {
+            'Negative' : 0,
+            'Positive' : 0,
+            'Neutral' : 0,
+            }
+    for sentiment in sentiments:
+        if sentiment == 'positive':
+            sentiment_dict['Positive'] += 1
+        elif sentiment == 'negative':
+            sentiment_dict['Negative'] += 1
+        elif sentiment == 'neutral':
+            sentiment_dict['Neutral'] += 1
+
+    return sentiment_dict
 
 def scrape_reviews(input_filename, versions):
     review_dict = {}
