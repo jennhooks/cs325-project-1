@@ -1,7 +1,6 @@
-import re
 import graph
 from scraper import EbayScraper
-from server import OllamaServer
+from server import OllamaServer, count_sentiments_list
 
 def main():
     products = [
@@ -10,90 +9,51 @@ def main():
             '7th edition',
             '8th edition',
             ]
-    #scrape_reviews('input.txt', products)
-#    reviews = {}
-#    for product in products:
-#        reviews[product] = []
-#        with open(f"{product} reviews.txt", 'r') as file:
-#            for line in file:
-#                reviews[product].append(line.rstrip())
-#    # Ollama server running on localhost with default port.
-#    server = OllamaServer('127.0.0.1', '11434')
-#
-#    for product in products:
-#        sentiments = generate_sentiments(server, 'phi3:mini', reviews[product])
-#        sentiments_trimmed = []
-#        for sentiment in sentiments:
-#            result = determine_sentiment(sentiment)
-#            sentiments_trimmed.append(result)
-#        list_to_file(f"{product} sentiments.txt", sentiments_trimmed)
+    # Ollama server running on localhost with default port.
+    server = OllamaServer('127.0.0.1', '11434')
+    #reviews_dict = scrape_reviews('input.txt', products)
+    reviews_dict = dict_from_file(products, 'reviews')
+    #sentiments_dict = produce_sentiments(server, 'phi3:mini', reviews_dict, products)
+    sentiments_dict = dict_from_file(products, 'sentiments')
+    data_dict = organize_sentiment_data_for_graphing(sentiments_dict, products)
+    graph.grouped_bar_chart('Calculus Early Transcendentals (Ebay)', products, data_dict)
 
-    data_dict = {
+def organize_sentiment_data_for_graphing(sentiments_dict, versions):
+    new_dict = {
         'Negative' : [],
         'Positive' : [],
         'Neutral' : [],
-            }
-    for product in products:
-        sentiments = list_from_file(f"{product} sentiments.txt")
-        sentiment_dict = count_sentiments(sentiments)
-        data_dict['Negative'].append(sentiment_dict['Negative'])
-        data_dict['Positive'].append(sentiment_dict['Positive'])
-        data_dict['Neutral'].append(sentiment_dict['Neutral'])
-
-    graph.grouped_bar_chart('Calculus Early Transcendentals (Ebay)', products, data_dict)
-
-def count_sentiments(sentiments):
-    sentiment_dict = {
-            'Negative' : 0,
-            'Positive' : 0,
-            'Neutral' : 0,
-            }
-    for sentiment in sentiments:
-        if sentiment == 'positive':
-            sentiment_dict['Positive'] += 1
-        elif sentiment == 'negative':
-            sentiment_dict['Negative'] += 1
-        elif sentiment == 'neutral':
-            sentiment_dict['Neutral'] += 1
-
-    return sentiment_dict
+        }
+    for version in versions:
+        sentiments = sentiments_dict[version]
+        sentiment_count_dict = count_sentiments_list(sentiments)
+        new_dict['Negative'].append(sentiment_count_dict['Negative'])
+        new_dict['Positive'].append(sentiment_count_dict['Positive'])
+        new_dict['Neutral'].append(sentiment_count_dict['Neutral'])
+    return new_dict
 
 def scrape_reviews(input_filename, versions):
     review_dict = {}
     # Get urls from input file.
     product_url_list = list_from_file(input_filename)
-    # Associate the urls with the output file names.
+    # Associate the urls with the dictionary.
     product_dict = {}
     for i in range(0, len(product_url_list)):
         product_dict[product_url_list[i]] = versions[i]
-    # For every product scrape the reviews and save them to a file.
+    # For every product scrape the reviews and save them to the dictionary.
     for product in product_dict:
         scraper = EbayScraper(product)
         all_reviews = scraper.get_reviews()
         review_dict[product] = all_reviews
     return review_dict
 
-# Asks a LLM whether a set of reviews is positive, negative, or neutral and
-# returns the full responses as a list of strings.
-def generate_sentiments(server, model, reviews):
-    sentiments = []
-    for review in reviews:
-        response = server.send_prompt(
-                model, 
-                f'Please tell me whether this comment "{review}" is positive, negative, or neutral?')
-        sentiments.append(response)
-    return sentiments
-
-# Counts the number of occurences of the words positive, negative, and 
-# neutral and assume the word with the most occurences is the correct 
-# sentiment.
-def determine_sentiment(response):
-    counts = {}
-    counts['positive'] = len(re.findall('positive', response))
-    counts['negative'] = len(re.findall('negative', response))
-    counts['neutral'] = len(re.findall('neutral', response))
-    return max(counts, key=counts.get)
-
+def produce_sentiments(server, model, review_dict, versions):
+    sentiments_dict = {}
+    for version in versions:
+        reviews = review_dict[version]
+        sentiments = server.get_sentiments_list(model, reviews)
+        sentiments_dict[version] = sentiments
+    return sentiments_dict
 
 # Saves a list to a file with newlines seperating elements.
 def list_to_file(filename, list_to_save):
@@ -109,6 +69,20 @@ def list_from_file(filename):
         for line in file:
             new_list.append(line.rstrip())
     return new_list
+
+# Function mainly intended to ease loading 4-5 review/sentiment files into a dictionary.
+def dict_from_file(versions, suffix):
+    data_dict = {}
+    for version in versions:
+        data_dict[version] = list_from_file(f"{version} {suffix}.txt")
+    return data_dict
     
+# Function mainly intended to ease saving 4-5 review/sentiment lists to corresponding files.
+def dict_to_file(versions, suffix):
+    data_dict = {}
+    for version in versions:
+        data_dict[version] = list_to_file(f"{version} {suffix}.txt")
+    return data_dict
+ 
 if __name__ == '__main__':
     main()
