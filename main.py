@@ -1,11 +1,11 @@
 #!/usr/bin/python
 # Main.py
 #
-#
+# Produces a chart based on LLM analysis of web scraped reviews from Ebay.
 import graph
 import serialize
 import argparse
-from scraper import scrape_reviews
+from scraper import scrape_reviews_ebay
 from server import OllamaServer
 
 def main():
@@ -51,7 +51,7 @@ def main():
         graph.grouped_bar_chart('Calculus Early Transcendentals (Ebay)', products, data_dict)
     # Only generate review files.
     elif args.scrape_only:
-        reviews_dict = scrape_reviews('input.txt', products)
+        reviews_dict = scrape_reviews_ebay('input.txt', products)
         serialize.dict_to_file(products, reviews_dict, 'reviews')
     # Only generate sentiment files based on existing review files.
     elif args.sentiments_only:
@@ -60,7 +60,7 @@ def main():
         serialize.dict_to_file(products, sentiments_dict, 'sentiments')
     # Run everything
     else:
-        reviews_dict = scrape_reviews('input.txt', products)
+        reviews_dict = scrape_reviews_ebay('input.txt', products)
         serialize.dict_to_file(products, reviews_dict, 'reviews')
         sentiments_dict = server.reviews_to_sentiments(model, reviews_dict, products)
         serialize.dict_to_file(products, sentiments_dict, 'sentiments')

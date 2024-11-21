@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # Scraper.py
 #
-# Provides classes for scraping review data from a product page.
+# Provides classes and functions for scraping review data from a product page.
 
 from bs4 import BeautifulSoup
 from abc import ABC, abstractmethod
@@ -72,9 +72,12 @@ class EbayScraper(Scraper):
             review_list.append(content.text.replace('Read full review...', ''))
         return review_list
 
-def scrape_reviews(input_filename, versions):
+# Returns a dictionary containing the results of running an Ebay scraper on each
+# url in the input file.
+def scrape_reviews_ebay(input_filename, versions):
     review_dict = {}
     url_list = serialize.list_from_file(input_filename)
+    # For each url, version in url_list, versions:
     for i in range(0, len(url_list)):
         scraper = EbayScraper(url_list[i])
         reviews = scraper.get_reviews()

@@ -51,15 +51,16 @@ class OllamaServer(Server):
             sentiments.append(response)
         return sentiments
 
-    # Returns a list of one-word sentiment strings when given a list of
-    # comments that should be interpreted by the LLM.
+    # Passes a list of comments to a LLM and returns a list with one-word 
+    # answers denoting whether each comment is positive, negative, or neutral.
     def get_sentiments_list(self, model, comments):
         sentiments = []
         for response in self.generate_sentiments(model, comments):
             sentiments.append(determine_sentiment(response))
         return sentiments
 
-
+    # Converts a dictionary comparing products to reviews into a dictionary
+    # comparing products to sentiment counts.
     def reviews_to_sentiments(self, model, review_dict, versions):
         sentiments_dict = {}
         for version in versions:
@@ -70,7 +71,7 @@ class OllamaServer(Server):
 
 # Counts the number of occurences of the words positive, negative, and 
 # neutral and assume the word with the most occurences is the correct 
-# sentiment.
+# sentiment of the overall response.
 def determine_sentiment(response):
     counts = {}
     counts['positive'] = len(re.findall('positive', response))
@@ -95,5 +96,3 @@ def count_sentiments_list(sentiments):
             sentiment_dict['Neutral'] += 1
 
     return sentiment_dict
-
-
