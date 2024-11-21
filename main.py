@@ -52,18 +52,18 @@ def main():
     # Only generate review files.
     elif args.scrape_only:
         reviews_dict = scrape_reviews_ebay('input.txt', products)
-        serialize.dict_to_file(products, reviews_dict, 'reviews')
+        serialize.dict_to_file(reviews_dict, 'reviews')
     # Only generate sentiment files based on existing review files.
     elif args.sentiments_only:
         reviews_dict = serialize.dict_from_file(products, 'reviews')
         sentiments_dict = server.reviews_to_sentiments(model, reviews_dict, products)
-        serialize.dict_to_file(products, sentiments_dict, 'sentiments')
+        serialize.dict_to_file(sentiments_dict, 'sentiments')
     # Run everything
     else:
         reviews_dict = scrape_reviews_ebay('input.txt', products)
-        serialize.dict_to_file(products, reviews_dict, 'reviews')
+        serialize.dict_to_file(reviews_dict, 'reviews')
         sentiments_dict = server.reviews_to_sentiments(model, reviews_dict, products)
-        serialize.dict_to_file(products, sentiments_dict, 'sentiments')
+        serialize.dict_to_file(sentiments_dict, 'sentiments')
         data_dict = graph.organize_sentiment_data(sentiments_dict, products)
         graph.grouped_bar_chart(graph_title, products, data_dict)
 

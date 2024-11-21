@@ -2,6 +2,7 @@
 # Serialize.py
 #
 # Functions to make I/O for this project slightly easier.
+from pathlib import Path
 
 # Saves a list to a file with newlines seperating elements.
 def list_to_file(filename, list_to_save):
@@ -19,13 +20,15 @@ def list_from_file(filename):
     return new_list
 
 # Function mainly intended to ease loading 4-5 review/sentiment files into a dictionary.
-def dict_from_file(versions, suffix):
+def dict_from_file(prefixes, suffix, path='.'):
     data_dict = {}
-    for version in versions:
-        data_dict[version] = list_from_file(f"{version} {suffix}.txt")
+    filename = Path(path)
+    for prefix in prefixes:
+        data_dict[prefix] = list_from_file(filename / f"{prefix} {suffix}.txt")
     return data_dict
     
 # Function mainly intended to ease saving 4-5 review/sentiment lists to corresponding files.
-def dict_to_file(versions, data_dict, suffix):
-    for version in versions:
-        list_to_file(f"{version} {suffix}.txt", data_dict[version])
+def dict_to_file(data_dict, suffix, path='.'):
+    filename = Path(path)
+    for prefix, data in data_dict.items():
+        list_to_file(filename / f"{prefix} {suffix}.txt", data_dict[prefix])
