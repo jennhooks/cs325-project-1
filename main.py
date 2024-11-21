@@ -5,7 +5,7 @@
 import graph
 import serialize
 import argparse
-from scraper import EbayScraper
+from scraper import scrape_reviews
 from server import OllamaServer
 
 def main():
@@ -56,34 +56,16 @@ def main():
     # Only generate sentiment files based on existing review files.
     elif args.sentiments_only:
         reviews_dict = serialize.dict_from_file(products, 'reviews')
-        sentiments_dict = produce_sentiments(server, model, reviews_dict, products)
+        sentiments_dict = server.reviews_to_sentiments(model, reviews_dict, products)
         serialize.dict_to_file(products, sentiments_dict, 'sentiments')
     # Run everything
     else:
         reviews_dict = scrape_reviews('input.txt', products)
         serialize.dict_to_file(products, reviews_dict, 'reviews')
-        sentiments_dict = produce_sentiments(server, model, reviews_dict, products)
+        sentiments_dict = server.reviews_to_sentiments(model, reviews_dict, products)
         serialize.dict_to_file(products, sentiments_dict, 'sentiments')
         data_dict = graph.organize_sentiment_data(sentiments_dict, products)
         graph.grouped_bar_chart(graph_title, products, data_dict)
-
-def scrape_reviews(input_filename, versions):
-    review_dict = {}
-    url_list = serialize.list_from_file(input_filename)
-    for i in range(0, len(url_list)):
-        scraper = EbayScraper(url_list[i])
-        reviews = scraper.get_reviews()
-        version = versions[i]
-        review_dict[version] = reviews
-    return review_dict
-
-def produce_sentiments(server, model, review_dict, versions):
-    sentiments_dict = {}
-    for version in versions:
-        reviews = review_dict[version]
-        sentiments = server.get_sentiments_list(model, reviews)
-        sentiments_dict[version] = sentiments
-    return sentiments_dict
 
 if __name__ == '__main__':
     main()

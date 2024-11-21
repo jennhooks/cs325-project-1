@@ -59,6 +59,15 @@ class OllamaServer(Server):
             sentiments.append(determine_sentiment(response))
         return sentiments
 
+
+    def reviews_to_sentiments(self, model, review_dict, versions):
+        sentiments_dict = {}
+        for version in versions:
+            reviews = review_dict[version]
+            sentiments = self.get_sentiments_list(model, reviews)
+            sentiments_dict[version] = sentiments
+        return sentiments_dict
+
 # Counts the number of occurences of the words positive, negative, and 
 # neutral and assume the word with the most occurences is the correct 
 # sentiment.
@@ -86,3 +95,5 @@ def count_sentiments_list(sentiments):
             sentiment_dict['Neutral'] += 1
 
     return sentiment_dict
+
+

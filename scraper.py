@@ -6,6 +6,7 @@
 from bs4 import BeautifulSoup
 from abc import ABC, abstractmethod
 import requests
+import serialize
 
 # Class representing the basic assumptions of a web scraper for a product page.
 class Scraper(ABC):
@@ -70,3 +71,13 @@ class EbayScraper(Scraper):
             # already available.
             review_list.append(content.text.replace('Read full review...', ''))
         return review_list
+
+def scrape_reviews(input_filename, versions):
+    review_dict = {}
+    url_list = serialize.list_from_file(input_filename)
+    for i in range(0, len(url_list)):
+        scraper = EbayScraper(url_list[i])
+        reviews = scraper.get_reviews()
+        version = versions[i]
+        review_dict[version] = reviews
+    return review_dict
