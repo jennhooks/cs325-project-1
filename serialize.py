@@ -26,8 +26,6 @@ def dict_from_file(versions, suffix):
     return data_dict
     
 # Function mainly intended to ease saving 4-5 review/sentiment lists to corresponding files.
-def dict_to_file(versions, suffix):
-    data_dict = {}
+def dict_to_file(versions, data_dict, suffix):
     for version in versions:
-        data_dict[version] = list_to_file(f"{version} {suffix}.txt")
-    return data_dict
+        list_to_file(f"{version} {suffix}.txt", data_dict[version])
