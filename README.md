@@ -38,6 +38,6 @@ The program can be run in several modes:
 
 `python main.py --use-cache` Produce a chart using the currently saved "* sentiments.txt" files. No scraping or LLM communication is performed.
 
-`python main.py --sentiments-only` Uses the currently saved "* reviews.txt" files to create the sentiment files. No web scraping or chart creation is performed.
+`python main.py --sentiments-only` Use the currently saved "* reviews.txt" files to create the sentiment files. No web scraping or chart creation is performed.
 
 `python main.py --scrape-only` Scrape the reviews from the Ebay product urls in input.txt and save them. No LLM communication or chart creation is performed.
